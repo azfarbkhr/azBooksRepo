@@ -1,0 +1,52 @@
+{% extends "azbooks/layout.html" %}
+{% load static %}
+
+{% block title %}Transactions Ledger{% endblock %}
+
+
+{% block content %}
+{% if messages %}
+    {% for message in messages %}
+        {{ message }}
+    {% endfor %}
+{% endif %}
+
+<h2>Transactions Ledger</h2>
+<!-- add button -->
+<a href="#" class="btn btn-primary">Add Transaction</a>
+
+
+{% if transaction_list_data %}
+    <table class="table table-striped">
+        <thead>
+            <tr>
+                <th scope="col">Date</th>
+                <th scope="col">Party</th>
+                <th scope="col">Reference</th>
+                <th scope="col">Folio Reference</th>
+                <th scope="col">Memo</th>
+                <th scope="col">Total Amount</th>
+                <th scope="col">Action</th>
+
+            </tr>
+        </thead>
+        <tbody>
+            {% for transaction_ledger in transaction_list_data %}
+                <tr>
+                    <td>{{ transaction_ledger.date }}</td>
+                    <td>{{ transaction_ledger.party }}</td>
+                    <td>{{ transaction_ledger.reference }}</td>
+                    <td>{{ transaction_ledger.folio_reference }}</td>
+                    <td>{{ transaction_ledger.memo }}</td>
+                    <td>{{ transaction_ledger.total_amount }}</td>
+                    <td>
+                        <a href="#">View</a> | <a href="#">Edit</a> | <a href="#">Delete</a>
+                    </td>
+
+                </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+{% endif %}
+{% endblock %}
+

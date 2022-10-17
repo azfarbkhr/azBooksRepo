@@ -1,0 +1,38 @@
+{% extends "azbooks/layout.html" %}
+{% load static %}
+
+{% block title %}Party List{% endblock %}
+
+
+{% block content %}
+<h2>Party List</h2>
+
+{% if messages %}
+    {% for message in messages %}
+        {{ message }}
+    {% endfor %}
+{% endif %}
+
+{% if party_list_data %}
+    <table class="table table-striped">
+        <thead>
+            <tr>
+                <th scope="col">Name</th>
+                <th scope="col">Legal Company Name</th>
+                <th scope="col">Edit</th>
+                <th scope="col">Delete</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for party in party_list_data %}
+                <tr>
+                    <td>{{ party.name }}</td>
+                    <td>{{ party.legal_company_name }}</td>
+                    <td><a href="#">Edit</a></td>
+                    <td><a href="#">Delete</a></td>
+                </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+{% endif %}
+{% endblock %}

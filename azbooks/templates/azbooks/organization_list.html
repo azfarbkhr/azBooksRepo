@@ -1,0 +1,46 @@
+{% extends "azbooks/layout.html" %}
+{% load static %}
+
+{% block title %}Organization List{% endblock %}
+
+
+{% block content %}
+    {% if messages %}
+        {% for message in messages %}
+            {{ message }}
+        {% endfor %}
+    {% endif %}
+    
+    <a href="{% url 'organization_create_url' %}">Add Organization</a>
+
+    <h2>Organizations</h2>
+
+    <table class="table table-striped">
+        <tr>
+            <th>Organization Name</th>
+            <th>Country</th>
+            <th>Currency</th>
+            <th>Phone</th>
+            <th>Users</th>
+            <th>Actions</th>
+        </tr>
+        {% for org in orgs %}
+            <tr>
+                <td>{{ org.name }}</td>
+                <td>{{ org.country }}</td>
+                <td>{{ org.currency }}</td>
+                <td>{{ org.phone }}</td>
+                <td>{{ org.get_users }}</td>
+                <td>
+                    <a href="{% url 'account_list_url' org_id=org.id %}" class="btn btn-primary btn-circle btn-sm">
+                        <i class="fas fa-book-open"></i>
+                    </a>
+                    <a href="{% url 'organization_edit_url' org_id=org.id %}" class="btn btn-primary btn-circle btn-sm">
+                        <i class="fas fa-edit"></i>
+                    </a>
+                </td>
+            </tr>
+        {% endfor %}
+    </table>
+
+{% endblock %}

@@ -1,0 +1,138 @@
+{% extends "azbooks/layout.html" %}
+{% load static %}
+
+{% block title %}Chart of Accounts {% endblock %}
+
+{% block scripts%}
+    <script type="text/javascript" charset="utf8" src="https://cdn.datatables.net/1.12.1/js/jquery.dataTables.js"></script>
+    <script type="text/javascript" charset="utf8" src="https://cdn.datatables.net/select/1.4.0/js/dataTables.select.min.js"></script>
+    <script type="text/javascript" charset="utf8" src="https://cdn.datatables.net/buttons/2.2.3/js/dataTables.buttons.min.js"></script>
+    <script type="text/javascript" charset="utf8" src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.1.3/jszip.min.js"></script>
+    <script type="text/javascript" charset="utf8" src="https://cdn.datatables.net/buttons/2.2.3/js/buttons.html5.min.js"></script>
+    <script type="text/javascript" charset="utf8" src="https://cdn.datatables.net/searchpanes/2.0.2/js/dataTables.searchPanes.min.js"></script>
+    <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/buttons/2.2.3/css/buttons.dataTables.min.css">  
+    <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/1.12.1/css/jquery.dataTables.css">  
+    <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/select/1.4.0/css/select.dataTables.css">  
+    <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/searchpanes/2.0.2/css/searchPanes.dataTables.min.css">  
+
+{% endblock %}
+
+<!-- 
+    requirements
+    - a table showing the chart of accounts DONE
+    - a button to add a new account
+    - a button to edit an account in the table 
+    - a button to delete an account in the table
+    - a button to delete account in bulk by selecting multiple accounts in the table
+    - a button to export the table to excel
+    - a button to import a list coa from excel
+    - a feature to filter the table by different types 
+ -->
+
+{% block content %}
+
+    <div class="d-sm-flex align-items-center justify-content-between mb-1">
+        <h1 class="h3 mb-0 text-gray-800">Chart of Accounts</h1>
+        <div>
+            <button class="d-none d-sm-inline-block btn btn-sm btn-primary shadow-sm" onclick="loadCoaModalAdd()"><i class="fas fa-plus fa-sm text-white-50"></i> Add Account</button>
+            <button class="d-none d-sm-inline-block btn btn-sm btn-primary shadow-sm"><i class="fas fa-file-import fa-sm text-white-50"></i> Import</button>
+        </div>
+
+    </div>
+
+    <div class="card shadow mb-2">
+        <!-- <div class="card-header py-3">
+                <h6 class="m-0 font-weight-bold text-primary">DataTables Example</h6>
+            </div> -->
+        <div class="card-body">
+            <div class="table-responsive hidden">
+                <table id="coa_table" class="myDataTable">
+                    <thead>
+                        <tr>
+                            <!-- specify column width here to be used in datatable -->
+                            <th>Code</th>
+                            <th>Name</th>
+                            <th>Type</th>
+                            <th>Balance</th>
+                            <th width="5%">Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for account in account_list_data %}
+                        <tr id="coa_{{account.id}}" >
+                            <td>{{ account.code }}</td>
+                            <td>{{ account.name }}</td>
+                            <td>{{ account.account_type }}</td>
+                            <td> NaN </td>
+                            <td>
+                                <button type="button" class="btn btn-primary btn-circle btn-sm" data-toggle="modal" data-target="#coaModal"
+                                    data-code="{{ account.code }}" data-name="{{ account.name }}"
+                                    data-type="{{ account.account_type}}" data-orgId = "{{org_id}}" 
+                                    data-id="{{ account.id }}"
+                                    onclick="loadCoaModal()">
+                                    
+                                    <i class="fas fa-highlighter"></i>
+                                </button>
+                                <!-- <a href="{% url 'account_edit_url' org_id=org_id pk=account.id %}"
+                                    class="btn btn-primary btn-circle btn-sm">
+                                    <i class="fas fa-highlighter"></i>
+                                </a> -->
+                                <a href="#" class="btn btn-danger btn-circle btn-sm">
+                                    <i class="fas fa-trash"></i>
+                                </a>
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <!-- Button trigger modal -->
+    <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#coaModal" >
+        Launch demo modal
+    </button>
+    
+    <!-- Modal -->
+    <div class="modal fade" id="coaModal" tabindex="-1" role="dialog" aria-labelledby="coaModalLabel" aria-hidden="true">
+        <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+            <h4 class="modal-title h4 mb-0 text-gray-800" id="coaModalLabel" >Add/Edit Account</h4>
+            <button type="button" class="d-none d-sm-inline-block btn btn-sm btn-primary shadow-sm" data-dismiss="modal" aria-label="Close">
+                <span aria-hidden="true">&times;</span>
+            </button>
+            </div>
+            <form action="" method="post">
+                <div class="modal-body">
+                    {% csrf_token %}
+                    <div class="form-group">
+                        
+                        <input type="hidden" class="form-control" id="modal_coa_id" name="id" placeholder="Enter code">
+                        <input type="hidden" class="form-control" id="modal_org_id" name="org_id" placeholder="Enter code">
+                        <label for="code">Code</label>
+                        <input type="text" class="form-control" id="modal_coa_code" name="code" placeholder="Enter code">
+
+                        <label for="name">Name</label>
+                        <input type="text" class="form-control" id="modal_coa_name" name="name" placeholder="Enter name">
+
+                        <label for="type">Type</label>
+                        <select class="form-control" id="modal_coa_type" name="type">
+                            {% for type in account_type_choices %}
+                                <option value="{{ type.0 }}">{{ type.1 }}</option>
+                            {% endfor %}
+                        </select>
+
+                    </div> 
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="d-none d-sm-inline-block btn btn-sm btn-primary shadow-sm" onclick="saveCoaModal()"><i class="fas fa-save fa-sm text-white-50"></i> Save</button>
+                    <button type="button" class="d-none d-sm-inline-block btn btn-sm btn-primary shadow-sm"><i class="fas fa-trash fa-sm text-white-50"></i> Delete</button>
+                </div>
+            </form>
+        </div>
+        </div>
+    </div>
+  
+{% endblock %}

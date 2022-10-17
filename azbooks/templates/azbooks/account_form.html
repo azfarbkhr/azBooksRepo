@@ -1,0 +1,24 @@
+{% extends "azbooks/layout.html" %}
+{% load static %}
+{% load crispy_forms_tags %}
+
+{% block title %} Edit | Chart of Account{% endblock %}
+
+{% block content %}
+
+<form action="POST" url="account_edit_url">
+    <div class="d-sm-flex align-items-center justify-content-between mb-1">
+        <h1 class="h3 mb-0 text-gray-800">Chart of Accounts - Edit</h1>
+        <div>
+            {% csrf_token %}
+            <button type="submit" class="d-none d-sm-inline-block btn btn-sm btn-primary shadow-sm"><i class="fas fa-save fa-sm text-white-50"></i> Save</button>            
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-md-12">
+            {{ form|crispy }}
+        </div>
+    </div>
+</form>
+
+{% endblock %}
